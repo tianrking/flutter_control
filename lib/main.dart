@@ -30,42 +30,50 @@ class _RemoteControlScreenState extends State<RemoteControlScreen> {
   Offset _joystickPosition = Offset.zero; // 摇杆小圆点的位置
   final double _joystickRadius = 80.0; // 摇杆背景的半径
   final double _smallCircleRadius = 20.0; // 摇杆小圆点的半径
+  double _xValue = 0.0; // X 轴分量
+  double _yValue = 0.0; // Y 轴分量
 
   // 处理摇杆触摸事件
- void _handleJoystickPan(DragUpdateDetails details) {
-      setState(() {
-          // 计算摇杆小圆点的新位置
-          Offset newPosition = _joystickPosition + Offset(details.delta.dx,-details.delta.dy);
+  void _handleJoystickPan(DragUpdateDetails details) {
+    setState(() {
+      // 计算摇杆小圆点的新位置
+      Offset newPosition =
+          _joystickPosition + Offset(details.delta.dx, -details.delta.dy);
 
-          // 限制小圆点在摇杆背景内
-          if (newPosition.distance > _joystickRadius - _smallCircleRadius) {
-            double distance = _joystickRadius - _smallCircleRadius;
-            newPosition = Offset.fromDirection(newPosition.direction,distance);
-          }
+      // 限制小圆点在摇杆背景内
+      if (newPosition.distance > _joystickRadius - _smallCircleRadius) {
+        double distance = _joystickRadius - _smallCircleRadius;
+        newPosition = Offset.fromDirection(newPosition.direction, distance);
+      }
 
-        _joystickPosition = newPosition;
-      });
+      _joystickPosition = newPosition;
+    });
 
-      // 计算方向向量，发送给机器人
-      _sendMoveCommand(_joystickPosition);
-
+    // 计算方向向量，发送给机器人
+    _sendMoveCommand(_joystickPosition);
   }
 
-  void _handleJoystickDragEnd(DragEndDetails details){
-       setState(() {
-            _joystickPosition = Offset.zero;//回到中心
-        });
+  void _handleJoystickDragEnd(DragEndDetails details) {
+    setState(() {
+      _joystickPosition = Offset.zero; // 回到中心
+      _xValue = 0.0; // 重置 X 轴分量
+      _yValue = 0.0; // 重置 Y 轴分量
+    });
     _sendStopCommand();
   }
 
   // 模拟发送移动命令
   void _sendMoveCommand(Offset direction) {
     // 计算方向向量
-    double x = direction.dx;
-    double y = direction.dy;
+    _xValue = direction.dx;
+    _yValue = direction.dy;
 
-    // 输出水平和垂直分量
-    print('Move Command: horizontal = $x , vertical = $y');
+
+      setState(() {
+       //  更新 state,  触发重新绘制, 更新 UI
+      });
+
+
   }
 
   void _sendStopCommand() {
@@ -111,6 +119,16 @@ class _RemoteControlScreenState extends State<RemoteControlScreen> {
               ),
             ),
           ),
+         // 显示当前控制映射的数值
+            Positioned(
+              bottom: 50 + _joystickRadius * 2 + 10, // 在摇杆下方显示
+                left: 50,
+              child: Text(
+                'X: ${_xValue.toStringAsFixed(2)}, Y: ${_yValue.toStringAsFixed(2)}', // 保留两位小数
+                style: const TextStyle(fontSize: 16, color: Colors.black),
+              )
+          ),
+
 
           // 功能按钮
           Positioned(
