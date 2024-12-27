@@ -37,6 +37,9 @@ dependencies:
 
   flutter_blue_plus: ^1.31.8
 
+  geolocator: ^10.1.0
+  sensors_plus: ^4.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
