@@ -1,4 +1,3 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,19 +16,53 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Remote Control App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const RemoteControlScreen(),
+      home: const RootScreen(), // 使用 RootScreen 作为主页面
     );
   }
 }
 
-class RemoteControlScreen extends StatefulWidget {
-  const RemoteControlScreen({super.key});
+class RootScreen extends StatefulWidget {
+  const RootScreen({super.key});
 
   @override
-  _RemoteControlScreenState createState() => _RemoteControlScreenState();
+  _RootScreenState createState() => _RootScreenState();
 }
 
-class _RemoteControlScreenState extends State<RemoteControlScreen> {
+class _RootScreenState extends State<RootScreen> {
+  int _currentIndex = 0; // 当前选中的页面索引
+
+  final List<Widget> _pages = [
+    const MainPage(), // 主页面
+    const TestPage(), // 测试页面
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_currentIndex], // 根据索引显示页面
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() => _currentIndex = index);
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'MAIN'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'TEST'),
+        ],
+      ),
+    );
+  }
+}
+
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   final BluetoothManager _bluetoothManager = BluetoothManager();
   final LocationService _locationService = LocationService();
   final SensorsService _sensorsService = SensorsService();
@@ -343,6 +376,25 @@ class _RemoteControlScreenState extends State<RemoteControlScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TestPage extends StatelessWidget {
+  const TestPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Test Page'),
+      ),
+      body: const Center(
+        child: Text(
+          'This is the Test Page',
+          style: TextStyle(fontSize: 24),
+        ),
       ),
     );
   }
